@@ -2,11 +2,14 @@ import { Button, Label, Spinner, TextInput } from "flowbite-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import {  signInSuccess } from "../redux/user/userSlice";
+import { useDispatch } from 'react-redux'
 
 const Signin = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim()})
   }
@@ -16,6 +19,7 @@ const Signin = () => {
     e.preventDefault();
     if(!formData.email || !formData.password){
       toast.error('Please fill all the details')
+      return;
     }
     try{
       setLoading(true);
@@ -29,6 +33,7 @@ const Signin = () => {
         toast.error(data.message);
       }
       if(res.ok){
+        dispatch(signInSuccess(data));
         navigate('/')
         toast.success('Login Successfully');
       }

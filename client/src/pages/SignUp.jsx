@@ -16,6 +16,7 @@ const Signup = () => {
     e.preventDefault();
     if(!formData.userName || !formData.email || !formData.password){
       toast.error('Please fill all the details')
+      return;
     }
     try{
       setLoading(true);
