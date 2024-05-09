@@ -11,7 +11,7 @@ import {
 import { app } from "../Fierbase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { deleteUserFailure, deleteUserStart, deleteUserSuccess, updateFailure, updateStart, updateSuccess } from "../redux/user/userSlice";
+import { deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutSucces, updateFailure, updateStart, updateSuccess } from "../redux/user/userSlice";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 const DashProfile = () => {
@@ -131,6 +131,25 @@ const DashProfile = () => {
     }
   }
 
+  const  handleSignOut = async() => {
+    try{
+      const res = await fetch('/api/user/signout', {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if(!res.ok){
+        toast.error(`${data.message}`)
+        return;
+      }
+      else{
+        toast.success('Signed Out Successfully!!')
+        dispatch(signOutSucces());
+      }
+    } catch(error){
+      console.log(error.message);
+    }
+  }
+
 
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
@@ -206,7 +225,7 @@ const DashProfile = () => {
         </Button>
         <div className="text-red-500 flex justify-between mt-5">
           <span className="cursor-pointer" onClick={() => setShowConfirmationModal(true)}>Delete Account</span>
-          <span>Sign Out</span>
+          <span className="cursor-pointer" onClick={handleSignOut}>Sign Out</span>
         </div>
       </form>
       <Modal show={showConfirmationModal} onClose={() => setShowConfirmationModal(false)} popup size='md'>
@@ -220,7 +239,6 @@ const DashProfile = () => {
               <Button color='failure' onClick={handleDeleteUser}>yes, I'm Sure</Button>
               <Button color='gray' onClick={() => setShowConfirmationModal(false)}>No, Cancel</Button>
             </div>
-
           </div>
         </Modal.Body>
       </Modal>
@@ -228,5 +246,4 @@ const DashProfile = () => {
     
   );
 };
-
 export default DashProfile;
