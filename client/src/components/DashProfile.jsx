@@ -11,8 +11,17 @@ import {
 import { app } from "../Fierbase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { deleteUserFailure, deleteUserStart, deleteUserSuccess, signOutSucces, updateFailure, updateStart, updateSuccess } from "../redux/user/userSlice";
+import {
+  deleteUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  signOutSucces,
+  updateFailure,
+  updateStart,
+  updateSuccess,
+} from "../redux/user/userSlice";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import {Link} from 'react-router-dom'
 
 const DashProfile = () => {
   const dispatch = useDispatch();
@@ -42,7 +51,7 @@ const DashProfile = () => {
   }, [imageFile]);
 
   const uploadImage = async () => {
-    setImageFileUploadSuccess(true)
+    setImageFileUploadSuccess(true);
     setImageFileUploadError(null);
     const storage = getStorage(app);
     const fileName = new Date().getTime() + imageFile.name;
@@ -75,81 +84,78 @@ const DashProfile = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({...formData, [e.target.id]: e.target.value})
+    setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  const handleSubmit = async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if(Object.keys(formData).length === 0){
+    if (Object.keys(formData).length === 0) {
       return;
     }
-    if(imageFileUploadSucces){
+    if (imageFileUploadSucces) {
       return;
     }
-    try{
+    try {
       dispatch(updateStart());
       const res = await fetch(`/api/user/update/${currentUser._id}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      if(!res.ok){
-        toast.error(`${data.message}`)
+      if (!res.ok) {
+        toast.error(`${data.message}`);
         dispatch(updateFailure(data.message));
-      }
-      else{
-        toast.success('User Information updated Successfully!!')
+      } else {
+        toast.success("User Information updated Successfully!!");
         dispatch(updateSuccess(data));
       }
-    } catch(error){
-      toast.error(`Internal Server Error!!`)
+    } catch (error) {
+      toast.error(`Internal Server Error!!`);
       dispatch(updateFailure(error.message));
     }
-  }
+  };
 
-  const handleDeleteUser = async() => {
+  const handleDeleteUser = async () => {
     setShowConfirmationModal(false);
-    try{
+    try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: 'DELETE',
-      })
-      const data = await res.json();
-      if(!res.ok){
-        toast.error(data.message);
-        dispatch(deleteUserFailure());
-      } else{
-        toast.success('User Deleted Successfully!!')
-        dispatch(deleteUserSuccess())
-      }
-    } catch(error){
-      toast.error('Internal Server Error!!')
-      dispatch(deleteUserFailure());
-    }
-  }
-
-  const  handleSignOut = async() => {
-    try{
-      const res = await fetch('/api/user/signout', {
-        method: 'POST'
+        method: "DELETE",
       });
       const data = await res.json();
-      if(!res.ok){
-        toast.error(`${data.message}`)
-        return;
+      if (!res.ok) {
+        toast.error(data.message);
+        dispatch(deleteUserFailure());
+      } else {
+        toast.success("User Deleted Successfully!!");
+        dispatch(deleteUserSuccess());
       }
-      else{
-        toast.success('Signed Out Successfully!!')
+    } catch (error) {
+      toast.error("Internal Server Error!!");
+      dispatch(deleteUserFailure());
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(`${data.message}`);
+        return;
+      } else {
+        toast.success("Signed Out Successfully!!");
         dispatch(signOutSucces());
       }
-    } catch(error){
+    } catch (error) {
       console.log(error.message);
     }
-  }
-
+  };
 
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
@@ -223,27 +229,57 @@ const DashProfile = () => {
         <Button type="submit" gradientDuoTone="purpleToBlue" outline>
           Update
         </Button>
+        {currentUser.isAdmin && (
+          <Link to={'/create-post'}>
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              Create a Post
+            </Button>
+          </Link>
+        )}
         <div className="text-red-500 flex justify-between mt-5">
-          <span className="cursor-pointer" onClick={() => setShowConfirmationModal(true)}>Delete Account</span>
-          <span className="cursor-pointer" onClick={handleSignOut}>Sign Out</span>
+          <span
+            className="cursor-pointer"
+            onClick={() => setShowConfirmationModal(true)}
+          >
+            Delete Account
+          </span>
+          <span className="cursor-pointer" onClick={handleSignOut}>
+            Sign Out
+          </span>
         </div>
       </form>
-      <Modal show={showConfirmationModal} onClose={() => setShowConfirmationModal(false)} popup size='md'>
-        <Modal.Header/>
+      <Modal
+        show={showConfirmationModal}
+        onClose={() => setShowConfirmationModal(false)}
+        popup
+        size="md"
+      >
+        <Modal.Header />
         <Modal.Body>
           <div className="text-center">
-            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto"/>
-            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">Are You sure want to delete Your account
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are You sure want to delete Your account
             </h3>
             <div className="flex justify-center gap-4">
-              <Button color='failure' onClick={handleDeleteUser}>yes, I'm Sure</Button>
-              <Button color='gray' onClick={() => setShowConfirmationModal(false)}>No, Cancel</Button>
+              <Button color="failure" onClick={handleDeleteUser}>
+                yes, I'm Sure
+              </Button>
+              <Button
+                color="gray"
+                onClick={() => setShowConfirmationModal(false)}
+              >
+                No, Cancel
+              </Button>
             </div>
           </div>
         </Modal.Body>
       </Modal>
     </div>
-    
   );
 };
 export default DashProfile;
