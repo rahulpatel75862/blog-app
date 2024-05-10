@@ -12,11 +12,15 @@ import {
 import { app } from "../Fierbase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import {  useSelector } from "react-redux";
+import { useNavigate } from 'react-router-dom'
 
 const CreatePost = () => {
   const [file, setFile] = useState(null);
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [formData, setFormData] = useState({});
+  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   const handleUploadImage = async () => {
     try {
@@ -42,7 +46,7 @@ const CreatePost = () => {
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
             setImageUploadProgress(null);
-            setFormData({ ...formData, image: downloadURL });
+            setFormData({ ...formData, image: downloadURL, userid: currentUser._id });
           });
         }
       );
@@ -53,10 +57,35 @@ const CreatePost = () => {
     }
   };
 
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    try{
+        const res = await fetch('/api/post/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type' : 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        const data = await res.json();
+
+        if(!res.ok){
+            toast.error(data.message);
+            return;
+        }
+        else{
+            toast.success('Post Created Successfully!!')
+            navigate(`/post/${data.slug}`)
+        }
+    } catch(error){
+        toast.error('Internal Server Error!!');
+    }
+  }
+
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold">Create a Post</h1>
-      <form className="flex flex-col gap-4">
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
             type="text"
@@ -64,8 +93,15 @@ const CreatePost = () => {
             required
             id="title"
             className="flex-1"
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
           />
-          <Select>
+          <Select
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
+          >
             <option value="uncategorized">Select a Category</option>
             <option value="javascript">javascript</option>
             <option value="MongoDB">MongoDB</option>
@@ -110,6 +146,9 @@ const CreatePost = () => {
           placeholder="Write Something"
           className="h-72 mb-12"
           required
+          onChange={(value) => {
+            setFormData({ ...formData, content: value });
+          }}
         />
         <Button type="submit" gradientDuoTone="purpleToPink">
           Publish
