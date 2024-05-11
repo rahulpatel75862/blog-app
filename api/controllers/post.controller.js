@@ -84,7 +84,6 @@ export const updatePost = async(req, res, next) =>{
                 image: req.body.image
             }
         }, {new: true})
-        console.log("sallu", updatePost)
         res.status(200).json(updatePost);
     } catch(error){
         next(error)
