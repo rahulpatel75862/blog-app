@@ -72,7 +72,26 @@ const DashUsers = () => {
   //     }
   //   };
 
-  const handleDeleteUser = async () => {};
+  const handleDeleteUser = async () => {
+    try {
+      const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setUsers((prevUser) =>
+          prevUser.filter((users) => users._id !== userIdToDelete)
+        );
+        setShowModal(false);
+        toast.success("User deleted Successfully!");
+      } else {
+        toast.error(data.message);
+        return;
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <div className="flex-grow overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
