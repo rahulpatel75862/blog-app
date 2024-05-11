@@ -119,7 +119,9 @@ const DashUsers = () => {
                       className="w-10 h-10 object-cover bg-gray-500 rounded-full"
                     />
                   </Table.Cell>
-                  <Table.Cell>{user.userName}</Table.Cell>
+                  <Table.Cell className="font-medium text-gray-900 dark:text-white">
+                    {user.userName}
+                  </Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
                   <Table.Cell>
                     {user.isAdmin ? (
