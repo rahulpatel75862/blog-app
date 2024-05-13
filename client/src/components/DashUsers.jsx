@@ -37,7 +37,6 @@ const DashUsers = () => {
     try {
       const res = await fetch(`/api/user/get/users?startIndex=${startIndex}`);
       const data = await res.json();
-      console.log("hleo", data);
       if (res.ok) {
         setUsers((prev) => [...prev, ...data.usersWithoutPassword]);
         if (data.totalUsers <= startIndex + data.usersWithoutPassword.length) {

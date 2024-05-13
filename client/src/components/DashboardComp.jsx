@@ -55,7 +55,7 @@ const DashboardComp = () => {
         if (res.ok) {
           setComments(data.comments);
           setTotalComments(data.totalComments);
-          setLastMonthComments(data.lastMonthComments);
+          setLastMonthComments(data.lastMonthsComments);
         }
       } catch (error) {
         console.log(error.message);
