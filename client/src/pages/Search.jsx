@@ -80,7 +80,7 @@ const Search = () => {
       return;
     } if(res.ok){
       const data = await res.json();
-      setPosts({...posts, ...data.posts});
+      setPosts(prevPosts => [...prevPosts, ...data.posts]);
       if(data.posts.length ===9){
         setShowMore(true);
       } else{
@@ -141,7 +141,7 @@ const Search = () => {
               <PostCard key={post._id} post={post}/>
             ))
           }
-          { showMore && <button onClick={handlShowMore} className="text-teal-500 text-lg hover:underline p-7 w-full">Show More</button>}
+          { showMore && <button onClick={handleShowMore} className="text-teal-500 text-lg hover:underline p-7 w-full">Show More</button>}
         </div>
       </div>
     </div>
